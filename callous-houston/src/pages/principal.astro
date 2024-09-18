@@ -1,0 +1,316 @@
+---
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import RegistrosList from '../components/RegistrosList';
+---
+
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestión de Usuarios</title>
+</head>
+<body>
+  <Navbar />
+
+  <main class="container"><br><br><br>
+    <h1 class="title"></h1>
+
+    <RegistrosList client:load />
+
+
+  </main>
+
+  <Footer />
+
+  <!-- Modal de edición -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Editar Usuario</h2>
+      <form id="editForm">
+        <input type="hidden" id="editUserId">
+        <label for="editUsername">Nombre de usuario:</label>
+        <input type="text" id="editUsername" required>
+        <label for="editEmail">Email:</label>
+        <input type="email" id="editEmail" required>
+        <label for="editDepositCode">Código de depósito:</label>
+        <input type="text" id="editDepositCode" required>
+        <button type="submit">Guardar cambios</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div id="deleteModal" class="modal">
+    <div class="modal-content">
+      <h2>Confirmar eliminación</h2>
+      <p>¿Estás seguro que deseas eliminar este usuario?</p>
+      <button id="confirmDelete">Sí, eliminar</button>
+      <button id="cancelDelete">Cancelar</button>
+    </div>
+  </div>
+
+  <style>
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .title {
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 32px;
+      font-weight: bold;
+    }
+
+    .add-user {
+      text-align: center;
+      margin-top: 32px;
+    }
+
+    .add-user button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .add-user button:hover {
+      background-color: #45a049;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 15% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    form input {
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    form button {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    form button:hover {
+      background-color: #45a049;
+    }
+
+    #deleteModal .modal-content {
+      text-align: center;
+    }
+
+    #deleteModal button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #confirmDelete {
+      background-color: #f44336;
+      color: white;
+    }
+
+    #cancelDelete {
+      background-color: #ccc;
+      color: black;
+    }
+  </style>
+
+  <script>
+let currentUserId: string | null = null;
+
+function openModal(modal: HTMLElement) {
+  modal.style.display = 'block';
+}
+
+function closeModal(modal: HTMLElement) {
+  modal.style.display = 'none';
+}
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const addUserButton = document.getElementById('addUserBtn');
+      const editModal = document.getElementById('editModal');
+      const deleteModal = document.getElementById('deleteModal');
+      const closeButton = document.querySelector('.close');
+      const editForm = document.getElementById('editForm');
+      const confirmDeleteButton = document.getElementById('confirmDelete');
+      const cancelDeleteButton = document.getElementById('cancelDelete');
+
+      if (addUserButton) {
+        addUserButton.addEventListener('click', () => {
+          console.log('Añadir usuario');
+          // Aquí puedes implementar la lógica para añadir un nuevo usuario
+        });
+      }
+
+      if (closeButton && editModal) {
+        closeButton.addEventListener('click', () => closeModal(editModal));
+      }
+
+      if (editModal && deleteModal) {
+    window.addEventListener('click', (event) => {
+      if (event.target === editModal) {
+        closeModal(editModal);
+      }
+      if (event.target === deleteModal) {
+        closeModal(deleteModal);
+      }
+    });
+  }
+
+      // Funcionalidad de edición
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('edit-button')) {
+          const userId = target.getAttribute('data-id');
+          const card = target.closest('.card');
+          if (card) {
+            const username = card.querySelector('.card-title')?.textContent || '';
+            const email = card.querySelector('.card-text:nth-child(2)')?.textContent || '';
+            const depositCode = card.querySelector('.card-text:nth-child(3)')?.textContent?.split(': ')[1] || '';
+
+            (document.getElementById('editUserId') as HTMLInputElement).value = userId || '';
+            (document.getElementById('editUsername') as HTMLInputElement).value = username;
+            (document.getElementById('editEmail') as HTMLInputElement).value = email;
+            (document.getElementById('editDepositCode') as HTMLInputElement).value = depositCode;
+
+            openModal(editModal!);
+          }
+        }
+      });
+
+      if (editForm) {
+        editForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const userId = (document.getElementById('editUserId') as HTMLInputElement).value;
+          const username = (document.getElementById('editUsername') as HTMLInputElement).value;
+          const email = (document.getElementById('editEmail') as HTMLInputElement).value;
+          const depositCode = (document.getElementById('editDepositCode') as HTMLInputElement).value;
+
+          try {
+            const response = await fetch(`http://localhost:3000/api/registro/${userId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ username, email, depositCode }),
+              credentials: 'include', // Incluye las cookies de sesión
+            });
+
+            if (response.ok && editModal) {
+              const card = document.querySelector(`.card[data-id="${userId}"]`);
+              if (card) {
+                const titleElement = card.querySelector('.card-title');
+                const emailElement = card.querySelector('.card-text:nth-child(2)');
+                const codeElement = card.querySelector('.card-text:nth-child(3)');
+                
+                if (titleElement) titleElement.textContent = username;
+                if (emailElement) emailElement.textContent = email;
+                if (codeElement) codeElement.textContent = `Código Devops: ${depositCode}`;
+              }
+              closeModal(editModal);
+            } else {
+              console.error('Error al actualizar el usuario');
+            }
+          } catch (error) {
+            console.error('Error:', error);
+          }
+        });
+      }
+
+      // Funcionalidad de eliminación
+      document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('delete-button')) {
+          const userId = target.getAttribute('data-id');
+          if (userId) {
+            currentUserId = userId;
+            openModal(deleteModal!);
+          }
+        }
+      });
+
+      if (confirmDeleteButton) {
+        confirmDeleteButton.addEventListener('click', async () => {
+          if (currentUserId) {
+            try {
+              const response = await fetch(`http://localhost:3000/api/registro/${currentUserId}`, {
+                method: 'DELETE',
+                credentials: 'include', // Incluye las cookies de sesión
+
+              });
+
+              if (response.ok && deleteModal) {
+                const card = document.querySelector(`.card[data-id="${currentUserId}"]`);
+                if (card) {
+                  card.remove();
+                }
+                closeModal(deleteModal);
+              } else {
+                console.error('Error al eliminar el usuario');
+              }
+            } catch (error) {
+              console.error('Error:', error);
+            }
+          }
+        });
+      }
+
+      if (cancelDeleteButton && deleteModal) {
+        cancelDeleteButton.addEventListener('click', () => {
+          closeModal(deleteModal);
+        });
+      }
+    });
+  </script>
+</body>
+</html>

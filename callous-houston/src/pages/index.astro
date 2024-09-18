@@ -1,0 +1,287 @@
+---
+import { registerUser, loginUser } from '../services/api';
+import { useState } from 'react';
+import '../styles/global.css';
+
+// Variables para almacenar errores y mensajes de éxito
+let errorMessage: string | null = null;
+let successMessage: string | null = null;
+
+// Función para manejar el registro de usuario
+const handleRegister = async (event: Event) => {
+  event.preventDefault();
+
+  const form = event.target as HTMLFormElement;
+  const username = form.usuario.value;
+  const email = form.email.value;
+  const password = form.contraseña.value;
+  const depositCode = form.CodigoDepov.value;
+
+  try {
+    const data = await registerUser(username, password, email, depositCode);
+    successMessage = "Usuario registrado con éxito";
+    errorMessage = null; // Limpiamos mensajes de error si todo está bien
+    console.log("Usuario registrado con éxito:", data);
+  } catch (error) {
+    errorMessage = (error as Error).message;
+    successMessage = null;
+    console.error("Error en el registro:", errorMessage);
+  }
+};
+
+// Función para manejar el inicio de sesión de usuario
+const handleLogin = async (event: Event) => {
+  event.preventDefault();
+
+  const form = event.target as HTMLFormElement;
+  const username = form.usuario.value;
+  const password = form.contraseña.value;
+
+  try {
+    const data = await loginUser(username, password);
+    successMessage = "Inicio de sesión exitoso";
+    errorMessage = null;
+    console.log("Inicio de sesión exitoso:", data);
+  } catch (error) {
+    errorMessage = (error as Error).message;
+    successMessage = null;
+    console.error("Error en el inicio de sesión:", errorMessage);
+  }
+};
+---
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SignIn&SignUp</title>
+    <link rel="stylesheet" href="../styles/global.css" />
+    <script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>
+    
+  </head>
+  <body>
+    <div class="container">
+      <div class="forms-container">
+        <div class="signin-signup">
+          <!-- Formulario de inicio de sesión -->
+          <form class="sign-in-form" id="login-form">
+            <h2 class="title">DEPOV</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" placeholder="Usuario" name="usuario" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Contraseña" name="contraseña" required />
+            </div>
+            <p id="login-error-contraseña" class="error-message" style="display: none; color: red;"></p>
+
+            <input type="submit" value="Ingresar" class="btn solid" />
+            <p class="social-text">Síguenos en nuestras redes sociales</p>
+            <div class="social-media">
+              <a href="#" class="social-icon">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </div>
+          </form>
+
+          <!-- Formulario de registro -->
+          <form class="sign-up-form" id="register-form">
+            <h2 class="title">Regístrate</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" placeholder="Usuario" name="usuario" required />
+            </div>
+            <p id="register-error-usuario" class="error-message" style="display: none; color: red;"></p>
+
+            <div class="input-field">
+              <i class="fas fa-envelope"></i>
+              <input type="email" placeholder="Email" name="email" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Contraseña" name="contraseña" required />
+            </div>
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Código DEPOV" name="CodigoDepov" required />
+            </div>
+            <p id="register-error-codigo" class="error-message" style="display: none; color: red;"></p>
+
+            <input type="submit" value="Registrarse" class="btn solid" />
+            <p class="social-text">Síguenos en nuestras redes sociales</p>
+            <div class="social-media">
+              <a href="#" class="social-icon">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="#" class="social-icon">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Mostrar mensajes generales -->
+      <p id="success-message" class="success-message" style="display: none; color: green;"></p>
+
+      <div class="panels-container">
+        <div class="panel left-panel">
+          <div class="content">
+            <h3>¿Eres un usuario nuevo?</h3>
+            <p>Haz click para registrarte</p>
+            <button class="btn transparent" id="sign-up-btn">Registrarse</button>
+          </div>
+          <img src="https://res.cloudinary.com/dpttspfhc/image/upload/v1726510070/img2_mevpo3.png" class="image" alt="imagen de inicio de sesión" />
+        </div>
+        <div class="panel right-panel">
+          <div class="content">
+            <h3>¿Ya eres parte de nosotros?</h3>
+            <p>Haz click aquí para ingresar</p>
+            <button class="btn transparent" id="sign-in-btn">Ingresar</button>
+          </div>
+          <img src="https://res.cloudinary.com/dpttspfhc/image/upload/v1726511253/img1_mqw9hh.png" class="image" alt="imagen de registro" />
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-overlay"></div>
+<div id="successModal" class="modal">
+  <div class="modal-content">
+    <p id="modalMessage"></p>
+  </div>
+</div>
+
+
+    <script>
+
+      // Función para mostrar el modal
+      // Función para mostrar el modal con el fondo oscuro
+const showModal = (message: string, redirectUrl: string): void => {
+  const modal = document.getElementById('successModal') as HTMLElement;
+  const modalMessage = document.getElementById('modalMessage') as HTMLElement;
+  const overlay = document.querySelector('.modal-overlay') as HTMLElement; // Type assertion
+  
+  if (modal && modalMessage && overlay) {
+    modalMessage.textContent = message;
+    overlay.style.display = 'block';  // Muestra el overlay
+    modal.style.display = 'block';    // Muestra el modal
+
+    setTimeout(() => {
+      modal.style.display = 'none';   // Oculta el modal
+      overlay.style.display = 'none'; // Oculta el overlay
+      window.location.href = redirectUrl;
+    }, 2000); // Ocultar después de 2 segundos
+  }
+};
+      // Función para mostrar mensajes de error específicos
+      const showFieldMessage = (fieldId: string, message: string): void => {
+        const fieldElement = document.getElementById(fieldId);
+        if (fieldElement) {
+          fieldElement.style.display = 'block';
+          fieldElement.textContent = message;
+        }
+      };
+
+      // Función para limpiar mensajes de error
+      const clearFieldMessage = (fieldId: string): void => {
+        const fieldElement = document.getElementById(fieldId);
+        if (fieldElement) {
+          fieldElement.style.display = 'none';
+          fieldElement.textContent = '';
+        }
+      };
+
+      // Función para manejar el registro de usuario
+      const handleRegister = async (event: Event): Promise<void> => {
+        event.preventDefault();
+        clearFieldMessage('register-error-usuario');
+        clearFieldMessage('register-error-codigo');
+        const form = event.target as HTMLFormElement;
+        const username = form.usuario.value;
+        const email = form.email.value;
+        const password = form.contraseña.value;
+        const depositCode = form.CodigoDepov.value;
+        
+        try {
+          const response = await fetch('http://localhost:3000/api/registro/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, password, email, depositCode }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            if (data.message === 'Usuario ya registrado') {
+              showFieldMessage('register-error-usuario', 'Usuario ya registrado');
+            } else if (data.message === 'Código de depósito incorrecto') {
+              showFieldMessage('register-error-codigo', 'Código DEPOV incorrecto');
+            } else {
+              throw new Error(data.message || 'Error al registrar el usuario');
+            }
+            return;
+          }
+
+          
+          showModal('Usuario registrado con éxito', '/');
+        } catch (error) {
+          if (error instanceof Error) {
+            showFieldMessage('register-error-usuario', 'Error en el registro');
+          }
+        }
+      };
+
+      // Función para manejar el inicio de sesión de usuario
+      const handleLogin = async (event: Event): Promise<void> => {
+        event.preventDefault();
+        const form = event.target as HTMLFormElement;
+        const username = form.usuario.value;
+        const password = form.contraseña.value;
+
+        try {
+          const response = await fetch('http://localhost:3000/api/registro/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            showFieldMessage('login-error-contraseña', 'Credenciales inválidas');
+            return;
+          }
+
+          clearFieldMessage('login-error-contraseña');
+          showModal('Inicio de sesión exitoso', '/principal');
+        } catch (error) {
+          if (error instanceof Error) {
+            showFieldMessage('login-error-contraseña', 'Error en el inicio de sesión');
+          }
+        }
+      };
+
+      // Asignar los eventos a los formularios
+      document.getElementById('register-form')?.addEventListener('submit', handleRegister);
+      document.getElementById('login-form')?.addEventListener('submit', handleLogin);
+
+      // Script para alternar entre los formularios de inicio y registro
+      const sign_in_btn = document.querySelector("#sign-in-btn");
+      const sign_up_btn = document.querySelector("#sign-up-btn");
+      const container = document.querySelector(".container");
+
+      sign_up_btn?.addEventListener("click", () => {
+        container?.classList.add("sign-up-mode");
+      });
+
+      sign_in_btn?.addEventListener("click", () => {
+        container?.classList.remove("sign-up-mode");
+      });
+    </script>
+    
+  </body>
+</html>
