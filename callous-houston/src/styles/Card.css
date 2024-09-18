@@ -1,0 +1,50 @@
+/* Card.css */
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Aumenta la sombra */
+  padding: 16px;
+  margin: 16px;
+  text-align: center;
+  width: 300px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Agrega una transición suave para el efecto de crecimiento y la sombra */
+}
+
+.card:hover {
+  transform: scale(1.05); /* Escala la carta al 105% de su tamaño original cuando el mouse está sobre ella */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); /* Aumenta la sombra al pasar el mouse sobre la carta */
+}
+
+.profile-image {
+  border-radius: 50%;
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  margin-bottom: 16px;
+}
+
+.card-body {
+  font-size: 16px;
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 16px;
+}
+
+.edit-button, .delete-button {
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.edit-button {
+  background-color: #4caf50;
+  color: white;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+}

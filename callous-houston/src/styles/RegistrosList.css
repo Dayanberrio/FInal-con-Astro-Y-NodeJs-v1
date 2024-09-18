@@ -1,0 +1,90 @@
+/* RegistrosList.css */
+.registros-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .registros-row {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  @media (max-width: 1200px) {
+    .registros-row {
+      justify-content: space-around;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .registros-row {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  /* Estilos para el modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 100%;
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+  }
+  
+  .modal-content form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .modal-content label {
+    margin-top: 10px;
+  }
+  
+  .modal-content input {
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .modal-content button {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .modal-content button:hover {
+    background-color: #45a049;
+  }
+  
+  .modal-content button[type="button"] {
+    background-color: #f44336;
+  }
+  
+  .modal-content button[type="button"]:hover {
+    background-color: #e53935;
+  }
+  
